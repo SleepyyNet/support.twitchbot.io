@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#54338C">
+    <title>{{article.title}} - TwitchBot Help Center</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <link rel="stylesheet" href="/assets/codemirror-xor-dark.css">
+    <link rel="stylesheet" href="/assets/syntax-xor-dark.css">
+    <link rel="stylesheet" href="/assets/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/codemirror.min.js" integrity="sha256-cEZZfu/xNhXjnj1TRr9CrIGoAZ2hztIzwNTUv0Zcll8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/mode/markdown/markdown.min.js" integrity="sha256-BZXkUzlSBobUXEiSFbDIbTc/DOqhNdegF/iK5m99kbk=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <nav>
+        <div>
+            <a href="/">TwitchBot</a>
+            <span style="float:right">
+                <a href="https://discordapp.com/invite/UNYzJqV">Support Server</a>
+                <a href="javascript:toggleNav('#nav-ctx')" id="nav-toggle">
+                    <img src="https://cdn.discordapp.com/avatars/{{user.id}}/{{user.avatar}}" class="avatar">
+                    <span>{{user.username}}&ensp;</span>
+                    <i class="fas fa-chevron-down"></i>
+                </a>
+            </span>
+        </div>
+    </nav>
+    <div class="ctx-menu" id="nav-ctx" style="display:none">
+        <a href="/articles/new">New article</a>
+        <a href="/oauth/deauthorize">Log out</a>
+    </div>
+    <script src="/assets/nav.js"></script>
+    <div class="body" style="text-align:left">
+        <h1>{{article.title}}</h1>
+        <div class="author">
+            <div style="position:relative">
+                <img src="https://cdn.discordapp.com/avatars/{{article.author.id}}/{{article.author.avatar}}">
+                <i class="fas fa-user-circle" style="position:absolute;bottom:0;right:7px;color:#54338C"></i>
+            </div>
+            <div>
+                <span>{{article.author.username}}</span>
+                <span style="opacity:.7">{{article.created_at}}</span>
+            </div>
+        </div>
+        <div style="padding:1rem 0">
+            <a href="/category/{{article.category}}">Return to {{article.category}}</a>
+            {% if admin %}
+                &bull;
+                <a href="/articles/{{article.article_id}}/edit">
+                    <i class="fas fa-pen"></i>
+                    Edit this Article
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="body article" style="text-align:left">
+        {{article.content}}
+    </div>
+</body>
+</html>

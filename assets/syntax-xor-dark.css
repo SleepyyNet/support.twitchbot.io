@@ -1,0 +1,20 @@
+.cm-link, .cm-string {
+    color: #2aa198 !important;
+}
+
+.cm-url, *[class^="cm-variable"], .cm-keyword {
+    color: #cb4b16 !important;
+}
+
+.cm-header {
+    color: #268bd2 !important;
+}
+
+.cm-quote, .cm-comment {
+    color: #586e75 !important;
+}
+
+.cm-error {
+    color: rgba(255,255,255,.87) !important;
+    background-color: #F07178 !important;
+}

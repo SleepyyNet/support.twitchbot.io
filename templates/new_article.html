@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#54338C">
+    <title>New Article - TwitchBot Help Center</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <link rel="stylesheet" href="/assets/codemirror-xor-dark.css">
+    <link rel="stylesheet" href="/assets/syntax-xor-dark.css">
+    <link rel="stylesheet" href="/assets/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/codemirror.min.js" integrity="sha256-cEZZfu/xNhXjnj1TRr9CrIGoAZ2hztIzwNTUv0Zcll8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/mode/markdown/markdown.min.js" integrity="sha256-BZXkUzlSBobUXEiSFbDIbTc/DOqhNdegF/iK5m99kbk=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <nav>
+        <div>
+            <a href="/">TwitchBot</a>
+            <span style="float:right">
+                <a href="https://discordapp.com/invite/UNYzJqV">Support Server</a>
+                <a href="javascript:toggleNav('#nav-ctx')" id="nav-toggle">
+                    <img src="https://cdn.discordapp.com/avatars/{{user.id}}/{{user.avatar}}" class="avatar">
+                    <span>{{user.username}}&ensp;</span>
+                    <i class="fas fa-chevron-down"></i>
+                </a>
+            </span>
+        </div>
+    </nav>
+    <div class="ctx-menu" id="nav-ctx" style="display:none">
+        <a href="/articles/new">New article</a>
+        <a href="/oauth/deauthorize">Log out</a>
+    </div>
+    <script src="/assets/nav.js"></script>
+    <header>
+        <h1>New article</h1>
+        <p>Fill out the fields below to create a new support article.</p>
+    </header>
+    <div class="body">
+        <form action="/articles/new" method="POST">
+            <label>Title</label>
+            <input type="text" name="title" required>
+            <label>Category</label>
+            <input type="text" name="category" required>
+            <label>Content</label>
+            <div class="editor"></div>
+            <textarea name="content" style="display:none" required></textarea>
+            <script>
+            var editor = CodeMirror(document.querySelector('.editor'), {
+                lineNumbers: true,
+                lineWrapping: true,
+                mode: "markdown"
+            });
+
+            editor.on('change', (instance, changeObj) => {
+                $("textarea[name=content]").val(editor.getValue());
+            });
+            </script>
+            <input type="submit" value="Submit Article" class="button" style="margin-left:0;margin-top:3em">
+        </form>
+    </div>
+</body>
+</html>
