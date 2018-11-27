@@ -45,14 +45,14 @@
             <input type="text" name="category" required value="{{article.category}}">
             <label>Content</label>
             <div class="editor"></div>
-            <textarea name="content" style="display:none" required></textarea>
+            <textarea name="content" style="display:none" required>{{article.content}}</textarea>
             <script>
             var editor = CodeMirror(document.querySelector('.editor'), {
                 lineNumbers: true,
                 mode: "markdown"
             });
 
-            editor.setValue("{{article.content}}");
+            editor.setValue($("textarea[name=content]").val());
 
             editor.on('change', (instance, changeObj) => {
                 $("textarea[name=content]").val(editor.getValue());
