@@ -245,3 +245,9 @@ code {
 .body.article h2 {
     font-size: 1.3em;
 }
+
+.banner {
+    background-color: rgb(67, 181, 129);
+    padding: 1rem;
+    color: white;
+}

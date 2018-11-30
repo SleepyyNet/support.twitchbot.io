@@ -6,6 +6,7 @@ import json, tinydb, re
 import requests
 import time
 from markdown import markdown
+from collections import Counter
 
 if "--local" in sys.argv:
     config = json.loads(open('local-config.json', 'r').read())
@@ -30,6 +31,7 @@ else:
     db = tinydb.TinyDB("database.db")
 articles = db.table('articles')
 users = db.table('users')
+categories = db.table('categories')
 
 if 'http://' in OAUTH2_REDIRECT_URI:
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = 'true'
@@ -69,7 +71,7 @@ def index():
     admin = False
     if discord.authorized:
         admin = users.get(tinydb.Query().id == user['id'])['admin']
-    return render_template('index.html', discord=discord, user=user, admin=admin)
+    return render_template('index.html', discord=discord, user=user, admin=admin, categories=categories.all())
 
 
 @app.route('/assets/<fname>')
@@ -136,7 +138,7 @@ def new_article():
     if not admin:
         return abort(403)
     if request.method == 'GET':
-        return render_template('new_article.html', user=user)
+        return render_template('new_article.html', user=user, categories=categories.all())
     elif request.method == 'POST':
         data = {
             "article_id": str(uuid4()),
@@ -163,7 +165,7 @@ def get_article(id):
     article['content'] = Markup(markdown(article['content']))
     article['author'] = users.get(tinydb.Query().id == article['creator_id'])
     article['created_at'] = time.strftime("%b %d, %Y", time.gmtime(article['created_at']))
-    return render_template('article.html', article=article, discord=discord, user=user, admin=admin)
+    return render_template('article.html', article=article, discord=discord, user=user, admin=admin, category=categories.get(tinydb.Query().id == article['category']))
 
 
 @app.route('/articles/<id>/edit', methods=['GET', 'POST'])
@@ -179,7 +181,7 @@ def edit_article(id):
     if article is None:
         return abort(404)
     if request.method == 'GET':
-        return render_template('edit_article.html', user=user, article=article)
+        return render_template('edit_article.html', user=user, article=article, categories=categories.all())
     elif request.method == 'POST':
         data = {
             "title": request.values['title'],
@@ -206,8 +208,16 @@ def del_article(id):
     return redirect('/me')
 
 
-def same_cat(c1, c2):
-    return c1.lower() == c2.lower()
+@app.route('/articles')
+@app.route('/articles/')
+def all_articles():
+    discord = make_session(token=session.get('oauth2_token'))
+    user = discord.get(API_BASE_URL + '/users/@me').json()
+    admin = False
+    if discord.authorized:
+        admin = users.get(tinydb.Query().id == user['id'])['admin']
+    return render_template('category.html', discord=discord, user=user, articles=articles.all(), category='all articles', admin=admin)
+
 
 @app.route('/category/<c>')
 def get_category(c):
@@ -216,8 +226,11 @@ def get_category(c):
     admin = False
     if discord.authorized:
         admin = users.get(tinydb.Query().id == user['id'])['admin']
-    data = articles.search(tinydb.Query().category.test(same_cat, c))
-    return render_template('category.html', discord=discord, user=user, articles=data, category=c.capitalize(), admin=admin)
+    cat = categories.get(tinydb.Query().id == c)
+    if cat is None:
+        return abort(404)
+    data = articles.search(tinydb.Query().category == c)
+    return render_template('category.html', discord=discord, user=user, articles=data, category=cat, admin=admin)
 
 
 def get_res(obj, term):
@@ -235,6 +248,57 @@ def search():
         return redirect('/')
     data = articles.search(tinydb.Query().title.test(get_res, term) | tinydb.Query().category.test(get_res, term))
     return render_template('search.html', discord=discord, user=user, articles=data, term=term, admin=admin)
+
+
+@app.route('/settings')
+def settings():
+    discord = make_session(token=session.get('oauth2_token'))
+    user = discord.get(API_BASE_URL + '/users/@me').json()
+    if not discord.authorized:
+        return redirect('/oauth?next=settings')
+    admin = users.get(tinydb.Query().id == user['id'])['admin']
+    if not admin:
+        return abort(403)
+    return render_template('settings.html', user=user)
+
+
+@app.route('/settings/categories', methods=['GET', 'POST'])
+def category_settings():
+    discord = make_session(token=session.get('oauth2_token'))
+    user = discord.get(API_BASE_URL + '/users/@me').json()
+    if not discord.authorized:
+        return redirect('/oauth?next=settings/categories')
+    admin = users.get(tinydb.Query().id == user['id'])['admin']
+    if not admin:
+        return abort(403)
+    if request.method == 'GET':
+        return render_template('cat_settings.html', user=user, categories=categories.all())
+    elif request.method == 'POST':
+        if request.values['category'] == 'new':
+            try:
+                data = {
+                    "id": str(uuid4()),
+                    "name": request.values['name'],
+                    "desc": request.values['desc']
+                }
+            except KeyError as e:
+                return "New categories must have a name and description", 400
+            categories.insert(data)
+            return redirect('/settings/categories?success=created')
+        else:
+            category = categories.get(tinydb.Query().id == request.values['category'])
+            if category == None:
+                return "For some reason, this category doesn't exist in the database.", 500
+            if request.values.get('delete', 'false') == 'true':
+                categories.remove(tinydb.Query().id == request.values['category'])
+                return redirect('/settings/categories?success=deleted')
+            data = {
+                "id": request.values['category'],
+                "name": request.values.get('name', category['name']),
+                "desc": request.values.get('desc', category['desc'])
+            }
+            categories.update(data, tinydb.Query().id == data['id'])
+            return redirect('/settings/categories?success=updated')
 
 
 if __name__ == '__main__':

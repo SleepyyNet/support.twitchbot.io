@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#54338C">
+    <title>Category Settings - TwitchBot Help Center</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <link rel="stylesheet" href="/assets/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="banner" style="display:none"></div>
+    <nav>
+        <div>
+            <a href="/">TwitchBot</a>
+            <span style="float:right">
+                <a href="https://discordapp.com/invite/UNYzJqV">Support Server</a>
+                <a href="javascript:toggleNav('#nav-ctx')" id="nav-toggle">
+                    <img src="https://cdn.discordapp.com/avatars/{{user.id}}/{{user.avatar}}" class="avatar">
+                    <span>{{user.username}}&ensp;</span>
+                    <i class="fas fa-chevron-down"></i>
+                </a>
+            </span>
+        </div>
+    </nav>
+    <div class="ctx-menu" id="nav-ctx" style="display:none">
+        <a href="/articles/new">New article</a>
+        <a href="/settings">Site settings</a>
+        <a href="/oauth/deauthorize">Log out</a>
+    </div>
+    <script src="/assets/nav.js"></script>
+    <header>
+        <h1>Category Settings</h1>
+    </header>
+    <div class="body">
+        <form action="/settings/categories" method="POST">
+            <select name="category" required>
+                <option value="new" selected>(Create new category)</option>
+                <option disabled>Existing categories:</option>
+                {% if categories|length == 0 %}
+                    <option disabled>There are no existing categories.</option>
+                {% endif %}
+                {% for category in categories %}
+                    <option value="{{category.id}}">{{category.name}}</option>
+                {% endfor %}
+            </select>
+            <label>Category name</label>
+            <p style="margin-top:0;font-size:.8em">Leave this blank if you do not want to change an existing category's name.</p>
+            <input type="text" name="name">
+            <label>Category description</label>
+            <p style="margin-top:0;font-size:.8em">Leave this blank if you do not want to change an existing category's description.</p>
+            <input type="text" name="desc">
+            <p style="color:#f04747;opacity:1">
+                <input type="checkbox" name="delete" value="true">
+                Delete this category
+            </p>
+            <input type="submit" value="Submit" class="button" style="margin-left:0;margin-top:3em">
+        </form>
+    </div>
+    <script>
+    function getUrlParameter(sParam) {
+        var sPageURL = window.location.search.substring(1),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+            }
+        }
+    };
+    switch (getUrlParameter('success')) {
+        case 'created':
+            $(".banner").css("display", "block");
+            $(".banner").html("Successfully created category.");
+            break;
+        case 'updated':
+            $(".banner").css("display", "block");
+            $(".banner").html("Successfully updated category info.");
+            break;
+        case 'deleted':
+            $(".banner").css("display", "block");
+            $(".banner").html("Successfully deleted category. Articles with this category will need their information updated manually.");
+            break;
+        default:
+            break;
+    }
+    </script>
+</body>
+</html>

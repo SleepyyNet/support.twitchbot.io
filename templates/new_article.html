@@ -30,6 +30,7 @@
     </nav>
     <div class="ctx-menu" id="nav-ctx" style="display:none">
         <a href="/articles/new">New article</a>
+        <a href="/settings">Site settings</a>
         <a href="/oauth/deauthorize">Log out</a>
     </div>
     <script src="/assets/nav.js"></script>
@@ -42,7 +43,14 @@
             <label>Title</label>
             <input type="text" name="title" required>
             <label>Category</label>
-            <input type="text" name="category" required>
+            <select name="category" required>
+                {% if categories|length == 0 %}
+                    <option disabled>There are no existing categories.</option>
+                {% endif %}
+                {% for category in categories %}
+                    <option value="{{category.id}}">{{category.name}}</option>
+                {% endfor %}
+            </select>
             <label>Content</label>
             <div class="editor"></div>
             <textarea name="content" style="display:none" required></textarea>

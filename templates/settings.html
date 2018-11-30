@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#54338C">
+    <title>Admin Settings - TwitchBot Help Center</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <link rel="stylesheet" href="/assets/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <nav>
+        <div>
+            <a href="/">TwitchBot</a>
+            <span style="float:right">
+                <a href="https://discordapp.com/invite/UNYzJqV">Support Server</a>
+                <a href="javascript:toggleNav('#nav-ctx')" id="nav-toggle">
+                    <img src="https://cdn.discordapp.com/avatars/{{user.id}}/{{user.avatar}}" class="avatar">
+                    <span>{{user.username}}&ensp;</span>
+                    <i class="fas fa-chevron-down"></i>
+                </a>
+            </span>
+        </div>
+    </nav>
+    <div class="ctx-menu" id="nav-ctx" style="display:none">
+        <a href="/articles/new">New article</a>
+        <a href="/settings">Site settings</a>
+        <a href="/oauth/deauthorize">Log out</a>
+    </div>
+    <script src="/assets/nav.js"></script>
+    <header>
+        <h1>Website Settings</h1>
+    </header>
+    <div class="body">
+        <a class="article-item" href="/settings/categories">
+            Article Categories
+        </a>
+    </div>
+</body>
+</html>

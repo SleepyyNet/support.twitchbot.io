@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#54338C">
     <title>{{article.title}} - TwitchBot Help Center</title>
+    <meta property="og:title" content="{{article.title}} - TwitchBot Support">
+    <meta property="og:url" content="https://support.twitchbot.io">
+    <meta property="og:image" content="https://cdn.discordapp.com/avatars/375805687529209857/7528f050ec2521877bcfa1abe3cfbab4.png">
+    <meta property="og:type" content="website">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
     <link rel="stylesheet" href="/assets/codemirror-xor-dark.css">
     <link rel="stylesheet" href="/assets/syntax-xor-dark.css">
@@ -20,16 +24,23 @@
             <a href="/">TwitchBot</a>
             <span style="float:right">
                 <a href="https://discordapp.com/invite/UNYzJqV">Support Server</a>
-                <a href="javascript:toggleNav('#nav-ctx')" id="nav-toggle">
-                    <img src="https://cdn.discordapp.com/avatars/{{user.id}}/{{user.avatar}}" class="avatar">
-                    <span>{{user.username}}&ensp;</span>
-                    <i class="fas fa-chevron-down"></i>
-                </a>
+                {% if not discord.authorized %}
+                    <a href="/oauth">Log in&ensp;<i class="fab fa-discord"></i></a>
+                {% else %}
+                    <a href="javascript:toggleNav('#nav-ctx')" id="nav-toggle">
+                        <img src="https://cdn.discordapp.com/avatars/{{user.id}}/{{user.avatar}}" class="avatar">
+                        <span>{{user.username}}&ensp;</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </a>
+                {% endif %}
             </span>
         </div>
     </nav>
     <div class="ctx-menu" id="nav-ctx" style="display:none">
-        <a href="/articles/new">New article</a>
+        {% if admin %}
+            <a href="/articles/new">New article</a>
+            <a href="/settings">Site settings</a>
+        {% endif %}
         <a href="/oauth/deauthorize">Log out</a>
     </div>
     <script src="/assets/nav.js"></script>
@@ -46,7 +57,7 @@
             </div>
         </div>
         <div style="padding:1rem 0">
-            <a href="/category/{{article.category}}">Return to {{article.category}}</a>
+            <a href="/category/{{category.id}}">Return to {{category.name}}</a>
             {% if admin %}
                 &bull;
                 <a href="/articles/{{article.article_id}}/edit">
